@@ -22,14 +22,6 @@ router.get('/:id', async function(req, res, next) {
 			'SELECT id, amt, paid, add_date, paid_date, code, name, description FROM invoices JOIN companies ON invoices.comp_code=companies.code WHERE id = $1',
 			[ req.params.id ]
 		);
-		// const invoiceQuery = await db.query(
-		// 	'SELECT id, amt, paid, add_date, paid_date, comp_code FROM invoices WHERE id = $1',
-		// 	[ req.params.id ]
-		// );
-		// const companyQuery = await db.query(
-		// 	`SELECT code, name, description FROM companies WHERE code = '${invoiceQuery
-		// 		.rows[0].comp_code}'`
-		// );
 
 		if (invoiceQuery.rows.length === 0) {
 			let notFoundError = new Error(
