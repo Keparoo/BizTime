@@ -82,7 +82,7 @@ router.put('/:code', async function(req, res, next) {
 	}
 });
 
-// DELETE /:id delete company, return: '{message: "Company deleted"}
+// DELETE /:id delete company, return: '{status: "Company deleted"}
 router.delete('/:code', async function(req, res, next) {
 	try {
 		const result = await db.query(
@@ -96,7 +96,7 @@ router.delete('/:code', async function(req, res, next) {
 				404
 			);
 		}
-		return res.json({ message: 'Company deleted' });
+		return res.json({ status: 'Company deleted' });
 	} catch (err) {
 		return next(err);
 	}
