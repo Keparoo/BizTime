@@ -19,13 +19,17 @@ router.get('/', async function(req, res, next) {
 router.get('/:id', async function(req, res, next) {
 	try {
 		const invoiceQuery = await db.query(
-			'SELECT id, amt, paid, add_date, paid_date, comp_code FROM invoices WHERE id = $1',
+			'SELECT id, amt, paid, add_date, paid_date, code, name, description FROM invoices JOIN companies ON invoices.comp_code=companies.code WHERE id = $1',
 			[ req.params.id ]
 		);
-		const companyQuery = await db.query(
-			`SELECT code, name, description FROM companies WHERE code = '${invoiceQuery
-				.rows[0].comp_code}'`
-		);
+		// const invoiceQuery = await db.query(
+		// 	'SELECT id, amt, paid, add_date, paid_date, comp_code FROM invoices WHERE id = $1',
+		// 	[ req.params.id ]
+		// );
+		// const companyQuery = await db.query(
+		// 	`SELECT code, name, description FROM companies WHERE code = '${invoiceQuery
+		// 		.rows[0].comp_code}'`
+		// );
 
 		if (invoiceQuery.rows.length === 0) {
 			let notFoundError = new Error(
@@ -34,10 +38,26 @@ router.get('/:id', async function(req, res, next) {
 			notFoundError.status = 404;
 			throw notFoundError;
 		}
-
+		console.log(invoiceQuery.rows);
+		const {
+			id,
+			amt,
+			paid,
+			add_date,
+			paid_date,
+			code,
+			name,
+			description
+		} = invoiceQuery.rows[0];
 		return res.json({
-			invoice: invoiceQuery.rows[0],
-			company: companyQuery.rows[0]
+			invoice: {
+				id,
+				amt,
+				paid,
+				add_date,
+				paid_date,
+				company: { code, name, description }
+			}
 		});
 	} catch (err) {
 		return next(err);
