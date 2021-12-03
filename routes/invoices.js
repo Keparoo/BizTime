@@ -19,9 +19,20 @@ router.get('/', async function(req, res, next) {
 router.get('/:id', async function(req, res, next) {
 	try {
 		const invoiceQuery = await db.query(
-			'SELECT id, amt, paid, add_date, paid_date, code, name, description FROM invoices JOIN companies ON invoices.comp_code=companies.code WHERE id = $1',
+			`SELECT id, amt, paid, add_date, paid_date, code, name, description
+             FROM invoices
+             JOIN companies
+             ON invoices.comp_code=companies.code
+             WHERE id = $1`,
 			[ req.params.id ]
 		);
+
+		// if (invoiceQuery.rows.length === 0) {
+		// 	throw new ExpressError(
+		// 		`There is no invoice with id '${req.params.id}`,
+		// 		404
+		// 	);
+		// }
 
 		if (invoiceQuery.rows.length === 0) {
 			let notFoundError = new Error(
@@ -61,8 +72,8 @@ router.post('/', async function(req, res, next) {
 	try {
 		const result = await db.query(
 			`INSERT INTO invoices (comp_code, amt) 
-           VALUES ($1, $2) 
-           RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+             VALUES ($1, $2) 
+             RETURNING id, comp_code, amt, paid, add_date, paid_date`,
 			[ req.body.comp_code, req.body.amt ]
 		);
 
@@ -88,11 +99,13 @@ router.put('/:id', async function(req, res, next) {
 		);
 
 		if (result.rows.length === 0) {
-			throw new ExpressError(
-				`There is no company with code of '${req.params.id}`,
-				404
+			let notFoundError = new Error(
+				`There is no invoice with id '${req.params.id}`
 			);
+			notFoundError.status = 404;
+			throw notFoundError;
 		}
+
 		const { id, comp_code, amt, paid, add_date, paid_date } = result.rows[0];
 
 		return res.json({
@@ -127,21 +140,26 @@ router.delete('/:id', async function(req, res, next) {
 router.get('/companies/:code', async function(req, res, next) {
 	try {
 		const invoiceQuery = await db.query(
-			'SELECT id, code, name, description FROM invoices JOIN companies ON invoices.comp_code=companies.code AND code = $1;',
+			`SELECT id, code, name, description
+             FROM invoices
+             JOIN companies
+             ON invoices.comp_code=companies.code
+             AND code = $1;`,
 			[ req.params.code ]
 		);
 
 		if (invoiceQuery.rows.length === 0) {
-			let notFoundError = new Error(
-				`There is no invoice with id '${req.params.id}`
-			);
-			notFoundError.status = 404;
-			throw notFoundError;
+			throw (notFoundError = new Error(
+				`There is no invoice with id '${req.params.code}`,
+				404
+			));
 		}
 
-		// const invoiceIdList = [];
-		// for (item of invoiceQuery.rows) {
-		// 	invoiceIdList.push(item.id);
+		// if (invoiceQuery.rows.length === 0) {
+		// 	throw new ExpressError(
+		// 		`There is no invoice with id '${req.params.code}`,
+		// 		404
+		// 	);
 		// }
 
 		const invoiceIdList = invoiceQuery.rows.map((i) => i.id);

@@ -45,8 +45,8 @@ router.post('/', async function(req, res, next) {
 	try {
 		const result = await db.query(
 			`INSERT INTO companies (code, name, description) 
-           VALUES ($1, $2, $3) 
-           RETURNING code, name, description`,
+             VALUES ($1, $2, $3) 
+             RETURNING code, name, description`,
 			[
 				slugify(req.body.code, { lower: true, strict: true }),
 				req.body.name,
@@ -76,10 +76,11 @@ router.put('/:code', async function(req, res, next) {
 		);
 
 		if (result.rows.length === 0) {
-			throw new ExpressError(
-				`There is no company with code of '${req.params.code}`,
-				404
+			let notFoundError = new Error(
+				`There is no company with code of '${req.params.code}`
 			);
+			notFoundError.status = 404;
+			throw notFoundError;
 		}
 
 		return res.json({ company: result.rows[0] });
@@ -98,7 +99,7 @@ router.delete('/:code', async function(req, res, next) {
 
 		if (result.rows.length === 0) {
 			throw new ExpressError(
-				`There is no company with id of '${req.params.company}`,
+				`There is no company with code of '${req.params.company}`,
 				404
 			);
 		}

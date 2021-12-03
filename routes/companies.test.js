@@ -7,6 +7,7 @@ const request = require('supertest');
 // app imports
 const app = require('../app');
 const db = require('../db');
+const ExpressError = require('../expressError');
 
 let testCompany;
 let testCompany2;
