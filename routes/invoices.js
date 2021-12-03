@@ -122,4 +122,39 @@ router.delete('/:id', async function(req, res, next) {
 		return next(err);
 	}
 });
+
+//GET /:code returns data about one company: '{company: {code, name, description, invoices: [id, ...]}}'
+router.get('/companies/:code', async function(req, res, next) {
+	try {
+		const invoiceQuery = await db.query(
+			'SELECT id, code, name, description FROM invoices JOIN companies ON invoices.comp_code=companies.code AND code = $1;',
+			[ req.params.code ]
+		);
+
+		if (invoiceQuery.rows.length === 0) {
+			let notFoundError = new Error(
+				`There is no invoice with id '${req.params.id}`
+			);
+			notFoundError.status = 404;
+			throw notFoundError;
+		}
+
+		const invoiceIdList = [];
+		for (item of invoiceQuery.rows) {
+			invoiceIdList.push(item.id);
+		}
+		const company = invoiceQuery.rows[0];
+		return res.json({
+			company: {
+				code: company.code,
+				name: company.name,
+				description: company.description,
+				invoices: invoiceIdList
+			}
+		});
+	} catch (err) {
+		return next(err);
+	}
+});
+
 module.exports = router;
