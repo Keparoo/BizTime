@@ -12,7 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "pg": "^8.7.1"
+    "pg": "^8.7.1",
+    "slugify": "^1.6.3"
   },
   "devDependencies": {
     "jest": "^27.4.3",
