@@ -41,7 +41,6 @@ router.get('/:id', async function(req, res, next) {
 			name,
 			description
 		} = invoiceQuery.rows[0];
-        console.log(add_date)
 		return res.json({
 			invoice: {
 				id,
