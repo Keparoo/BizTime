@@ -139,10 +139,12 @@ router.get('/companies/:code', async function(req, res, next) {
 			throw notFoundError;
 		}
 
-		const invoiceIdList = [];
-		for (item of invoiceQuery.rows) {
-			invoiceIdList.push(item.id);
-		}
+		// const invoiceIdList = [];
+		// for (item of invoiceQuery.rows) {
+		// 	invoiceIdList.push(item.id);
+		// }
+
+		const invoiceIdList = invoiceQuery.rows.map((i) => i.id);
 		const company = invoiceQuery.rows[0];
 		return res.json({
 			company: {
