@@ -11,7 +11,8 @@ const ExpressError = require('../expressError');
 router.get('/', async function(req, res, next) {
 	try {
 		const companyQuery = await db.query(
-			'SELECT code, name, description FROM companies'
+			`SELECT code, name, description
+             FROM companies`
 		);
 		return res.json({ companies: companyQuery.rows });
 	} catch (err) {
@@ -22,19 +23,31 @@ router.get('/', async function(req, res, next) {
 //GET /:code returns data about one company: '{company: company}'
 router.get('/:code', async function(req, res, next) {
 	try {
-		const companyQuery = await db.query(
-			'SELECT code, name, description FROM companies WHERE code = $1',
+		const results = await db.query(
+			`SELECT i.code, i.industry, c.code, c.name, c.description
+             FROM industries AS i
+             JOIN companies_industries AS ci
+             ON i.code = ci.ind_code
+             JOIN companies AS c
+             ON ci.comp_code = c.code
+             WHERE c.code = $1`,
 			[ req.params.code ]
 		);
 
-		if (companyQuery.rows.length === 0) {
+		const { code, name, description } = results.rows[0];
+		industryList = results.rows.map((i) => i.industry);
+
+		if (results.rows.length === 0) {
 			let notFoundError = new Error(
 				`There is no company with code '${req.params.code}`
 			);
 			notFoundError.status = 404;
 			throw notFoundError;
 		}
-		return res.json({ company: companyQuery.rows[0] });
+
+		return res.json({
+			company: { code, name, description, industries: industryList }
+		});
 	} catch (err) {
 		return next(err);
 	}
