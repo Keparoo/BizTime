@@ -220,13 +220,6 @@ router.get('/companies/:code', async function(req, res, next) {
 			));
 		}
 
-		// if (invoiceQuery.rows.length === 0) {
-		// 	throw new ExpressError(
-		// 		`There is no invoice with id '${req.params.code}`,
-		// 		404
-		// 	);
-		// }
-
 		const invoiceIdList = invoiceQuery.rows.map((i) => i.id);
 		const company = invoiceQuery.rows[0];
 		return res.json({
