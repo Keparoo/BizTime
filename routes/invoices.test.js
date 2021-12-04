@@ -106,11 +106,12 @@ describe('POST /invoices', function() {
 /** PUT /invoices/[id] - update invoice; return `{invoice: {id, comp_code, amt, paid, add_date, paid_date}}` */
 
 describe('PUT /invoices/:id', function() {
-	test('Updates a single invoice', async function() {
+	test('Updates a single invoice as paid', async function() {
 		const response = await request(app)
 			.put(`/invoices/${testInvoice1.id}`)
 			.send({
-				amt: testInvoice3.amt
+				amt: testInvoice3.amt,
+				paid: true
 			});
 		expect(response.statusCode).toEqual(200);
 		expect(response.body).toEqual({
@@ -118,9 +119,29 @@ describe('PUT /invoices/:id', function() {
 				id: testInvoice1.id,
 				comp_code: testInvoice1.comp_code,
 				amt: testInvoice3.amt,
-				paid: testInvoice1.paid,
+				paid: true,
 				add_date: new Date(testInvoice1.add_date).toJSON(),
-				paid_date: testInvoice1.paid_date
+				paid_date: expect.any(String)
+			}
+		});
+	});
+
+	test('Updates a single invoice as unpaid', async function() {
+		const response = await request(app)
+			.put(`/invoices/${testInvoice1.id}`)
+			.send({
+				amt: testInvoice3.amt,
+				paid: false
+			});
+		expect(response.statusCode).toEqual(200);
+		expect(response.body).toEqual({
+			invoice: {
+				id: testInvoice1.id,
+				comp_code: testInvoice1.comp_code,
+				amt: testInvoice3.amt,
+				paid: false,
+				add_date: new Date(testInvoice1.add_date).toJSON(),
+				paid_date: null
 			}
 		});
 	});

@@ -83,20 +83,85 @@ router.post('/', async function(req, res, next) {
 	}
 });
 
+// // PUT /:amt invoice amount; return '{invoice: {id, comp_code, amt, paid, add_date, paid_date}}'
+// router.put('/:id', async function(req, res, next) {
+// 	try {
+// 		const result = await db.query(
+// 			`UPDATE invoices
+//              SET amt=$1
+//              WHERE id = $2
+//              RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+// 			[ req.body.amt, req.params.id ]
+// 		);
+
+// 		if (result.rows.length === 0) {
+// 			let notFoundError = new Error(
+// 				`There is no invoice with id '${req.params.id}`
+// 			);
+// 			notFoundError.status = 404;
+// 			throw notFoundError;
+// 		}
+
+// 		const { id, comp_code, amt, paid, add_date, paid_date } = result.rows[0];
+
+// 		return res.json({
+// 			invoice: { id, comp_code, amt, paid, add_date, paid_date }
+// 		});
+// 	} catch (err) {
+// 		return next(err);
+// 	}
+// });
+
 // PUT /:amt invoice amount; return '{invoice: {id, comp_code, amt, paid, add_date, paid_date}}'
 router.put('/:id', async function(req, res, next) {
 	try {
-		if (!'id' in req.body) {
-			throw new ExpressError('Not allowed', 400);
+		const currentInvoice = await db.query(
+			`SELECT amt, paid
+             FROM invoices 
+             WHERE id = $1
+            `,
+			[ req.params.id ]
+		);
+
+		if (currentInvoice.rows.length === 0) {
+			let notFoundError = new Error(
+				`There is no invoice with id '${req.params.id}`
+			);
+			notFoundError.status = 404;
+			throw notFoundError;
 		}
 
-		const result = await db.query(
-			`UPDATE invoices 
-             SET amt=$1
-             WHERE id = $2
-             RETURNING id, comp_code, amt, paid, add_date, paid_date`,
-			[ req.body.amt, req.params.id ]
-		);
+		const { amt: old_amt, paid: old_paid } = currentInvoice.rows[0];
+
+		let result;
+		if (!old_paid && req.body.paid) {
+			// pay invoice
+			result = await db.query(
+				`UPDATE invoices 
+                 SET amt=$1, paid=$2, paid_date=$3
+                 WHERE id = $4
+                 RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+				[ req.body.amt, true, new Date().toJSON(), req.params.id ]
+			);
+		} else if (old_paid && !req.body.paid) {
+			// unpay invoice
+			result = await db.query(
+				`UPDATE invoices 
+                 SET amt=$1, paid=$2, paid_date=$3
+                 WHERE id = $4
+                 RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+				[ req.body.amt, false, null, req.params.id ]
+			);
+		} else {
+			// only update amount, paid & paid_date do not change
+			result = await db.query(
+				`UPDATE invoices 
+                 SET amt=$1
+                 WHERE id = $2
+                 RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+				[ req.body.amt, req.params.id ]
+			);
+		}
 
 		if (result.rows.length === 0) {
 			let notFoundError = new Error(
