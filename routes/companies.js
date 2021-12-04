@@ -122,6 +122,7 @@ router.delete('/:code', async function(req, res, next) {
 	}
 });
 
+//POST /:comp_code/industries/:ind_code, return {industry: { comp_code, ind_code }}
 router.post('/:comp_code/industries/:ind_code', async function(req, res, next) {
 	try {
 		const result = await db.query(
@@ -132,7 +133,7 @@ router.post('/:comp_code/industries/:ind_code', async function(req, res, next) {
 			[ req.params.comp_code, req.params.ind_code ]
 		);
 
-		return res.status(201).json({ industry: result.rows });
+		return res.status(201).json({ industry: result.rows[0] });
 	} catch (err) {
 		return next(err);
 	}
