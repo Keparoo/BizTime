@@ -122,4 +122,20 @@ router.delete('/:code', async function(req, res, next) {
 	}
 });
 
+router.post('/:comp_code/industries/:ind_code', async function(req, res, next) {
+	try {
+		const result = await db.query(
+			`INSERT INTO companies_industries (comp_code, ind_code)
+             VALUES ($1, $2)
+             RETURNING comp_code, ind_code
+            `,
+			[ req.params.comp_code, req.params.ind_code ]
+		);
+
+		return res.status(201).json({ industry: result.rows });
+	} catch (err) {
+		return next(err);
+	}
+});
+
 module.exports = router;
