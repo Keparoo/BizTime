@@ -49,6 +49,7 @@ router.get('/:code', async function(req, res, next) {
 			company: { code, name, description, industries: industryList }
 		});
 	} catch (err) {
+		console.log('*****************err', err);
 		return next(err);
 	}
 });

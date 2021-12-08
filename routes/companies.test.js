@@ -14,15 +14,15 @@ let testCompany2;
 
 beforeEach(async function() {
 	// await db.query('ALTER TABLE companies DROP CONSTRAINT fk_name');
-	await db.query('DROP TABLE IF EXISTS companies');
+	// await db.query('DROP TABLE IF EXISTS companies');
 	// await db.query('DROP TABLE IF EXISTS invoices');
 	// await db.query('DROP TABLE IF EXISTS industries');
 	// await db.query('DROP TABLE IF EXISTS companies_industries');
-	await db.query(`CREATE TABLE companies (
-        code text PRIMARY KEY,
-        name text NOT NULL UNIQUE,
-        description text
-    )`);
+	// await db.query(`CREATE TABLE companies (
+	//     code text PRIMARY KEY,
+	//     name text NOT NULL UNIQUE,
+	//     description text
+	// )`);
 	// await db.query(`CREATE TABLE invoices (
 	//     id serial PRIMARY KEY,
 	//     comp_code text NOT NULL REFERENCES companies ON DELETE CASCADE,
