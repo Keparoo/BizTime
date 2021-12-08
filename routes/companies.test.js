@@ -13,34 +13,34 @@ let testCompany;
 let testCompany2;
 
 beforeEach(async function() {
-	await db.query('ALTER TABLE companies DROP CONSTRAINT fk_name');
+	// await db.query('ALTER TABLE companies DROP CONSTRAINT fk_name');
 	await db.query('DROP TABLE IF EXISTS companies');
-	await db.query('DROP TABLE IF EXISTS invoices');
-	await db.query('DROP TABLE IF EXISTS industries');
-	await db.query('DROP TABLE IF EXISTS companies_industries');
+	// await db.query('DROP TABLE IF EXISTS invoices');
+	// await db.query('DROP TABLE IF EXISTS industries');
+	// await db.query('DROP TABLE IF EXISTS companies_industries');
 	await db.query(`CREATE TABLE companies (
         code text PRIMARY KEY,
         name text NOT NULL UNIQUE,
         description text
     )`);
-	await db.query(`CREATE TABLE invoices (
-	    id serial PRIMARY KEY,
-	    comp_code text NOT NULL REFERENCES companies ON DELETE CASCADE,
-	    amt float NOT NULL,
-	    paid boolean DEFAULT false NOT NULL,
-	    add_date date DEFAULT CURRENT_DATE NOT NULL,
-	    paid_date date,
-	    CONSTRAINT invoices_amt_check CHECK ((amt > (0)::double precision))
-	)`);
-	await db.query(`CREATE TABLE industries (
-	    code TEXT PRIMARY KEY,
-	    industry TEXT UNIQUE NOT NULL
-	)`);
-	await db.query(`CREATE TABLE companies_industries (
-	    comp_code TEXT NOT NULL REFERENCES companies,
-	    ind_code TEXT NOT NULL REFERENCES industries,
-	    PRIMARY KEY (comp_code, ind_code)
-	)`);
+	// await db.query(`CREATE TABLE invoices (
+	//     id serial PRIMARY KEY,
+	//     comp_code text NOT NULL REFERENCES companies ON DELETE CASCADE,
+	//     amt float NOT NULL,
+	//     paid boolean DEFAULT false NOT NULL,
+	//     add_date date DEFAULT CURRENT_DATE NOT NULL,
+	//     paid_date date,
+	//     CONSTRAINT invoices_amt_check CHECK ((amt > (0)::double precision))
+	// )`);
+	// await db.query(`CREATE TABLE industries (
+	//     code TEXT PRIMARY KEY,
+	//     industry TEXT UNIQUE NOT NULL
+	// )`);
+	// await db.query(`CREATE TABLE companies_industries (
+	//     comp_code TEXT NOT NULL REFERENCES companies,
+	//     ind_code TEXT NOT NULL REFERENCES industries,
+	//     PRIMARY KEY (comp_code, ind_code)
+	// )`);
 
 	let result = await db.query(`
     INSERT INTO
@@ -145,7 +145,7 @@ describe('DELETE /companies/:code', function() {
 afterEach(async function() {
 	// delete any data created by test
 	await db.query('DELETE FROM companies');
-	await db.query('DROP TABLE IF EXISTS companies');
+	// await db.query('DROP TABLE IF EXISTS companies');
 });
 
 afterAll(async function() {
