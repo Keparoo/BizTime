@@ -24,16 +24,23 @@ router.get('/', async function(req, res, next) {
 router.get('/:code', async function(req, res, next) {
 	try {
 		const results = await db.query(
-			`SELECT i.code, i.industry, c.code, c.name, c.description
-             FROM industries AS i
+			// `SELECT i.code, i.industry, c.code, c.name, c.description
+			//  FROM industries AS i
+			//  JOIN companies_industries AS ci
+			//  ON i.code = ci.ind_code
+			//  JOIN companies AS c
+			//  ON ci.comp_code = c.code
+			//  WHERE c.code = $1`,
+			`SELECT c.code, c.name, c.description, i.code, i.industry
+             FROM companies AS c 
              JOIN companies_industries AS ci
-             ON i.code = ci.ind_code
-             JOIN companies AS c
-             ON ci.comp_code = c.code
+             ON c.code = ci.comp_code
+             JOIN industries AS i
+             ON ci.ind_code = i.code
              WHERE c.code = $1`,
 			[ req.params.code ]
 		);
-
+		console.log('********** Results', results);
 		const { code, name, description } = results.rows[0];
 		industryList = results.rows.map((i) => i.industry);
 
