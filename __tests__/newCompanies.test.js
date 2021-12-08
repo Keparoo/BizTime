@@ -55,7 +55,6 @@ describe('GET /companies', function() {
 describe('GET /companies/:code', function() {
 	test('Gets a single company', async function() {
 		const response = await request(app).get(`/companies/testco`);
-		console.log('************After get', testCompany);
 		expect(response.statusCode).toEqual(200);
 		expect(response.body).toEqual({ company: testCompany });
 	});
