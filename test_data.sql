@@ -1,4 +1,4 @@
-\c biztime
+\c biztime_test
 
 DROP TABLE IF EXISTS invoices;
 DROP TABLE IF EXISTS companies;
@@ -42,8 +42,8 @@ INSERT INTO industries
          ('software', 'Software Development');
 
 CREATE TABLE companies_industries (
-    comp_code TEXT NOT NULL REFERENCES companies,
-    ind_code TEXT NOT NULL REFERENCES industries,
+    comp_code TEXT NOT NULL REFERENCES companies ON DELETE CASCADE,
+    ind_code TEXT NOT NULL REFERENCES industries ON DELETE CASCADE,
     PRIMARY KEY (comp_code, ind_code)
 );
 
