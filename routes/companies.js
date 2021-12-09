@@ -40,7 +40,7 @@ router.get('/:code', async function(req, res, next) {
              WHERE c.code = $1`,
 			[ req.params.code ]
 		);
-		console.log('********** Results', results);
+		// console.log('********** Results', results);
 		const { code, name, description } = results.rows[0];
 		industryList = results.rows.map((i) => i.industry);
 
